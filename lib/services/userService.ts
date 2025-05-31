@@ -1,20 +1,20 @@
 import { prisma } from '@/lib/prisma';
 import { decrypt } from '@/lib/crypto';
-import { User as AppUser, Project, APIUsage, APIKey as APIKeyInterface, SubscriptionTier as AppSubscriptionTier } from '@/lib/types';
-import { Prisma, SubscriptionTier as PrismaSubscriptionTier, ApiKey as PrismaApiKey, User as PrismaDbUser } from '@prisma/client';
+import { User as AppUser, Project as AppProject, APIUsage as AppAPIUsage, APIKey as AppAPIKey, SubscriptionTier as AppSubscriptionTier } from '@/lib/types';
+import { Prisma } from '@prisma/client';
 
 interface UserUpdateData {
   name?: string;
   email?: string;
   avatarUrl?: string;
-  subscriptionTier?: AppSubscriptionTier;
+  subscriptionTier?: AppUser['subscriptionTier'];
 }
 
 interface GetUserProjectsOptions {
   page?: number;
   pageSize?: number;
-  filter?: { status?: Project['status'] };
-  sort?: { field: keyof Project; direction: 'asc' | 'desc' };
+  filter?: Prisma.ProjectCreateInput;
+  sort?: { field: keyof AppProject; direction: 'asc' | 'desc' };
 }
 
 interface GetUserUsageStatsOptions {
@@ -23,14 +23,14 @@ interface GetUserUsageStatsOptions {
 }
 
 // Helper to map Prisma User to app User interface (excluding sensitive fields)
-const mapPrismaUserToAppUser = (user: PrismaDbUser): AppUser => {
+const mapPrismaUserToAppUser = (user: Prisma.User): AppUser => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { hashedPassword, resetToken, resetTokenExpiry, emailVerified, subscriptionTier, ...rest } = user;
-  return { ...rest, subscriptionTier: user.subscriptionTier as AppSubscriptionTier };
+  return { ...rest, subscriptionTier: user.subscriptionTier as AppUser['subscriptionTier'] };
 };
 
 // Helper to map Prisma APIKey to app APIKey interface (after decryption)
-const mapPrismaApiKeyToAppApiKey = (apiKey: PrismaApiKey, decryptedKey: string): APIKeyInterface => ({
+const mapPrismaApiKeyToAppApiKey = (apiKey: Prisma.ApiKey, decryptedKey: string): AppAPIKey => ({
   id: apiKey.id,
   userId: apiKey.userId,
   provider: apiKey.provider,
@@ -83,7 +83,7 @@ export async function updateUser(userId: string, data: UserUpdateData): Promise<
       where: { id: userId },
       data: {
         ...data,
-        subscriptionTier: data.subscriptionTier as PrismaSubscriptionTier,
+        subscriptionTier: data.subscriptionTier as Prisma.SubscriptionTier,
       },
     });
     return mapPrismaUserToAppUser(user);
@@ -108,11 +108,12 @@ export async function deleteUser(userId: string): Promise<AppUser> {
   }
 }
 
-export async function getUserProjects(userId: string, options: GetUserProjectsOptions = {}): Promise<Project[]> {
+export async function getUserProjects(userId: string, options: GetUserProjectsOptions = {}): Promise<AppProject[]> {
   const { page = 1, pageSize = 10, filter, sort } = options;
   const skip = (page - 1) * pageSize;
   const take = pageSize;
 
+  // Build orderBy object safely
   const orderBy: any = sort ? { [sort.field]: sort.direction } : { createdAt: 'desc' };
 
   try {
@@ -123,8 +124,20 @@ export async function getUserProjects(userId: string, options: GetUserProjectsOp
       orderBy,
       // TODO: Include relations if needed (e.g., workflows, members)
     });
-    // Assuming Project types match closely or map here if necessary
-    return projects as Project[];
+    // Map Prisma Project objects to AppProject interface
+    return projects.map((p: Prisma.Project) => ({ // Map Prisma Project to AppProject
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      type: p.type as AppProject['type'],
+      status: p.status as AppProject['status'],
+      userId: p.userId,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+      deletedAt: p.deletedAt,
+      isDeleted: p.isDeleted,
+      deletedBy: p.deletedBy,
+    }));
   } catch (error) {
     console.error('Error fetching user projects:', error);
     throw new Error('Failed to fetch user projects');
@@ -157,11 +170,11 @@ export async function getUserUsageStats(userId: string, options: GetUserUsageSta
   }
 }
 
-export async function updateUserSubscription(userId: string, tier: AppSubscriptionTier): Promise<AppUser> {
+export async function updateUserSubscription(userId: string, tier: AppUser['subscriptionTier']): Promise<AppUser> {
   try {
     const user = await prisma.user.update({
       where: { id: userId },
-      data: { subscriptionTier: tier as PrismaSubscriptionTier },
+      data: { subscriptionTier: tier as Prisma.SubscriptionTier },
     });
     return mapPrismaUserToAppUser(user);
   } catch (error) {
@@ -170,12 +183,12 @@ export async function updateUserSubscription(userId: string, tier: AppSubscripti
   }
 }
 
-export async function getUserAPIKeys(userId: string): Promise<APIKeyInterface[]> {
+export async function getUserAPIKeys(userId: string): Promise<AppAPIKey[]> {
   try {
     const apiKeys = await prisma.apiKey.findMany({
       where: { userId },
     });
-    const decryptedKeys = apiKeys.map((key: PrismaApiKey) => {
+    const decryptedKeys = apiKeys.map((key: Prisma.ApiKey) => {
         const decrypted = decrypt(key.encryptedKey);
         return mapPrismaApiKeyToAppApiKey(key, decrypted);
     });
