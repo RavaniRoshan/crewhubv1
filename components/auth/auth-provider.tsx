@@ -1,34 +1,14 @@
 "use client";
 
-import { createContext, useContext, ReactNode } from "react";
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  image?: string;
-} | null;
-
-type AuthContextType = {
-  user: User;
-  signIn: (provider: string) => Promise<void>;
-  signOut: () => Promise<void>;
-};
-
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  signIn: async () => {},
-  signOut: async () => {},
-});
-
-export const useAuth = () => useContext(AuthContext);
+import { SessionProvider } from "next-auth/react";
+import { ReactNode } from "react";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
-  // This is a mock implementation
+  return <SessionProvider>{children}</SessionProvider>;
   // In the final implementation, we'll use NextAuth.js
   const user: User = null;
 

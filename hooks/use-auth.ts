@@ -2,11 +2,11 @@ import { useSession, signIn, signOut } from 'next-auth/react';
 import type { AppSession } from '@/lib/types';
 
 export function useAuth() {
-  const { data, status } = useSession();
+  const session = useSession();
   return {
-    user: (data as AppSession | undefined)?.user,
-    session: data as AppSession | undefined,
-    status,
+    user: session.data?.user,
+    session: session.data,
+    status: session.status,
     signIn,
     signOut,
   };

@@ -72,7 +72,7 @@ async function main() {
   });
 
   // Create test API keys
-  await prisma.apiKey.create({
+  await prisma.aPIKey.create({
     data: {
       userId: user.id,
       provider: 'OPENAI',
