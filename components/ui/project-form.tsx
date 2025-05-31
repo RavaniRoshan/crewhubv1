@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 
-const projectSchema = z.object({
+export const projectSchema = z.object({
   name: z.string().min(3, 'Project name must be at least 3 characters'),
   description: z.string().optional(),
+  type: z.enum(['INTERNAL', 'CLIENT', 'DEMO', 'OTHER']),
 });
 
 type ProjectFormValues = z.infer<typeof projectSchema>;
@@ -25,8 +26,10 @@ export function ProjectForm({ initialValues, onSubmit, loading, submitLabel = 'S
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
-      name: initialValues?.name || '',
-      description: initialValues?.description || '',
+      name: '',
+      description: '',
+      type: 'INTERNAL',
+      ...initialValues,
     },
   });
 
@@ -40,7 +43,7 @@ export function ProjectForm({ initialValues, onSubmit, loading, submitLabel = 'S
             <FormItem>
               <FormLabel>Project Name</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Enter project name" />
+                <Input placeholder="Project name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -53,14 +56,32 @@ export function ProjectForm({ initialValues, onSubmit, loading, submitLabel = 'S
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea {...field} placeholder="Optional project description" />
+                <Textarea placeholder="Project description" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Project Type</FormLabel>
+              <FormControl>
+                <select {...field} className="border rounded px-3 py-2 w-full text-sm">
+                  <option value="INTERNAL">Internal</option>
+                  <option value="CLIENT">Client</option>
+                  <option value="DEMO">Demo</option>
+                  <option value="OTHER">Other</option>
+                </select>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button type="submit" disabled={loading}>
-          {loading ? 'Saving...' : submitLabel}
+          {submitLabel}
         </Button>
       </form>
     </Form>

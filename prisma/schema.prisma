@@ -39,6 +39,13 @@ enum APIProvider {
   GOOGLE
 }
 
+enum ProjectType {
+  INTERNAL
+  CLIENT
+  DEMO
+  OTHER
+}
+
 model User {
   id               String           @id @default(uuid()) @db.Uuid
   email            String           @unique
@@ -106,16 +113,23 @@ model Project {
   userId      String        @db.Uuid
   name        String
   description String?
+  type        ProjectType   @default(INTERNAL)
   status      ProjectStatus @default(ACTIVE)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+  isDeleted   Boolean       @default(false)
+  deletedBy   String?
 
   // Relations
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   workflows Workflow[]
+  versions  ProjectVersion[]
+  activityLogs ProjectActivityLog[]
 
   @@index([userId])
   @@index([status])
+  @@index([isDeleted])
 }
 
 model Workflow {
@@ -171,4 +185,25 @@ model APIKey {
   @@index([userId])
   @@index([provider])
   @@index([isActive])
+}
+
+model ProjectVersion {
+  id        String   @id @default(uuid()) @db.Uuid
+  projectId String   @db.Uuid
+  data      Json
+  createdAt DateTime @default(now())
+  createdBy String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@index([projectId])
+}
+
+model ProjectActivityLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  projectId String   @db.Uuid
+  action    String
+  data      Json?
+  createdAt DateTime @default(now())
+  createdBy String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@index([projectId])
 }
