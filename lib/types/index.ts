@@ -65,3 +65,16 @@ export interface TeamMember {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// NextAuth session and user types
+export interface AppUser {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string;
+}
+
+export interface AppSession {
+  user: AppUser;
+  expires: string;
+}

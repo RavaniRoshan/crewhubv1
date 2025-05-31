@@ -1,18 +1,67 @@
-import * as React from 'react';
+import React from 'react';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { ButtonProps, buttonVariants } from '@/components/ui/button';
 
-const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
-  <nav
-    role="navigation"
-    aria-label="pagination"
-    className={cn('mx-auto flex w-full justify-center', className)}
-    {...props}
-  />
-);
-Pagination.displayName = 'Pagination';
+/**
+ * Pagination component with customizable page sizes.
+ * @param {object} props
+ * @param {number} props.page - Current page (controlled).
+ * @param {number} props.pageCount - Total number of pages.
+ * @param {(page: number) => void} props.onPageChange - Page change handler.
+ * @param {number[]} [props.pageSizes] - Page size options.
+ * @param {number} [props.pageSize] - Current page size.
+ * @param {(size: number) => void} [props.onPageSizeChange] - Page size change handler.
+ * @param {string} [props.className] - Additional class names.
+ */
+export interface PaginationProps {
+  page: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
+  pageSizes?: number[];
+  pageSize?: number;
+  onPageSizeChange?: (size: number) => void;
+  className?: string;
+}
+
+export function Pagination({ page, pageCount, onPageChange, pageSizes, pageSize, onPageSizeChange, className }: PaginationProps) {
+  return (
+    <div className={cn('flex items-center gap-4', className)}>
+      <button
+        className="px-2 py-1 rounded border text-sm disabled:opacity-50"
+        onClick={() => onPageChange(page - 1)}
+        disabled={page <= 1}
+        aria-label="Previous page"
+      >
+        Previous
+      </button>
+      <span className="text-sm">
+        Page {page} of {pageCount}
+      </span>
+      <button
+        className="px-2 py-1 rounded border text-sm disabled:opacity-50"
+        onClick={() => onPageChange(page + 1)}
+        disabled={page >= pageCount}
+        aria-label="Next page"
+      >
+        Next
+      </button>
+      {pageSizes && onPageSizeChange && (
+        <select
+          className="ml-4 border rounded px-2 py-1 text-sm"
+          value={pageSize}
+          onChange={(e) => onPageSizeChange(Number(e.target.value))}
+          aria-label="Page size"
+        >
+          {pageSizes.map((size) => (
+            <option key={size} value={size}>{size} / page</option>
+          ))}
+        </select>
+      )}
+    </div>
+  );
+}
 
 const PaginationContent = React.forwardRef<
   HTMLUListElement,
@@ -107,7 +156,6 @@ const PaginationEllipsis = ({
 PaginationEllipsis.displayName = 'PaginationEllipsis';
 
 export {
-  Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,

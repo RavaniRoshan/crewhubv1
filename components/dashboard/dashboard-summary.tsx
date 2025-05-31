@@ -1,48 +1,46 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  BrainCircuit,
-  CreditCard,
-  MessageSquare,
-  Users,
-} from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import React from "react";
 
-const summaryItems = [
-  {
-    title: "Active Projects",
-    value: "12",
-    change: "+2",
-    icon: <BrainCircuit className="h-4 w-4 text-muted-foreground" />,
-  },
-  {
-    title: "Total Conversations",
-    value: "289",
-    change: "+14",
-    icon: <MessageSquare className="h-4 w-4 text-muted-foreground" />,
-  },
-  {
-    title: "Team Members",
-    value: "8",
-    change: "+1",
-    icon: <Users className="h-4 w-4 text-muted-foreground" />,
-  },
-  {
-    title: "Monthly Spending",
-    value: "$234.57",
-    change: "-5%",
-    icon: <CreditCard className="h-4 w-4 text-muted-foreground" />,
-  },
-];
+interface Stat {
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+  change?: string;
+}
 
-export function DashboardSummary() {
+interface DashboardSummaryProps {
+  stats: Stat[];
+  loading?: boolean;
+}
+
+export function DashboardSummary({ stats, loading }: DashboardSummaryProps) {
+  if (loading) {
+    return (
+      <>
+        {[...Array(4)].map((_, i) => (
+          <Card key={i}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-4 rounded-full" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-3 w-16 mt-2" />
+            </CardContent>
+          </Card>
+        ))}
+      </>
+    );
+  }
   return (
     <>
-      {summaryItems.map((item) => (
+      {stats.map((item) => (
         <Card key={item.title}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{item.title}</CardTitle>
@@ -50,9 +48,9 @@ export function DashboardSummary() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{item.value}</div>
-            <p className="text-xs text-muted-foreground">
-              {item.change} from last month
-            </p>
+            {item.change && (
+              <p className="text-xs text-muted-foreground">{item.change} from last month</p>
+            )}
           </CardContent>
         </Card>
       ))}

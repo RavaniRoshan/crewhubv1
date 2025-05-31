@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { BrainCircuit } from "lucide-react";
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -35,10 +37,20 @@ export default function LoginPage() {
       password: "",
     },
   });
+  const router = useRouter();
+  const { signIn } = useAuth();
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // This will be implemented with NextAuth
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const res = await signIn('credentials', {
+      redirect: false,
+      email: values.email,
+      password: values.password,
+    });
+    if (res?.ok) {
+      router.push('/dashboard');
+    } else {
+      // TODO: Show error toast
+    }
   }
 
   return (
@@ -126,7 +138,7 @@ export default function LoginPage() {
           <div className="flex gap-2">
             <AuthSocialButton
               icon="google"
-              onClick={() => console.log("Google login")}
+              onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
             />
             <AuthSocialButton
               icon="github"

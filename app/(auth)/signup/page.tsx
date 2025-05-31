@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { BrainCircuit } from "lucide-react";
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -44,10 +46,31 @@ export default function SignupPage() {
       terms: false,
     },
   });
+  const router = useRouter();
+  const { signIn } = useAuth();
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // This will be implemented with NextAuth
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    // Register user via API
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      }),
+    });
+    if (res.ok) {
+      // Auto-login after signup
+      await signIn('credentials', {
+        redirect: false,
+        email: values.email,
+        password: values.password,
+      });
+      router.push('/dashboard');
+    } else {
+      // TODO: Show error toast
+    }
   }
 
   return (
@@ -175,7 +198,7 @@ export default function SignupPage() {
           <div className="flex gap-2">
             <AuthSocialButton
               icon="google"
-              onClick={() => console.log("Google login")}
+              onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
             />
             <AuthSocialButton
               icon="github"

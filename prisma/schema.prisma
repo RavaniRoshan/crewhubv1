@@ -43,8 +43,8 @@ model User {
   id               String           @id @default(uuid()) @db.Uuid
   email            String           @unique
   name             String
+  avatarUrl        String?
   hashedPassword   String?
-  image            String?
   emailVerified    DateTime?
   googleId         String?          @unique
   resetToken       String?          @unique

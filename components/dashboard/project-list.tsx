@@ -26,51 +26,23 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
-// Mock data for projects
-const projects = [
-  {
-    id: "proj-1",
-    name: "Customer Support Assistant",
-    description: "An AI agent to handle customer support inquiries",
-    model: "gpt-4",
-    conversations: 124,
-    members: 3,
-    progress: 80,
-    status: "active",
-  },
-  {
-    id: "proj-2",
-    name: "Content Creation Bot",
-    description: "AI-powered content creation and idea generation",
-    model: "claude-3-opus",
-    conversations: 87,
-    members: 5,
-    progress: 65,
-    status: "active",
-  },
-  {
-    id: "proj-3",
-    name: "Market Research Analyzer",
-    description: "Analyze market trends and generate insights",
-    model: "gpt-4",
-    conversations: 56,
-    members: 2,
-    progress: 40,
-    status: "active",
-  },
-  {
-    id: "proj-4",
-    name: "Code Assistant",
-    description: "AI pair programmer for developers",
-    model: "claude-3-sonnet",
-    conversations: 92,
-    members: 4,
-    progress: 70,
-    status: "paused",
-  },
-];
+interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  status: string;
+  model?: string;
+  conversations?: number;
+  members?: number;
+  progress?: number;
+  createdAt?: string;
+}
 
-export function ProjectList() {
+interface ProjectListProps {
+  projects: Project[];
+}
+
+export function ProjectList({ projects }: ProjectListProps) {
   return (
     <div className="mt-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -132,20 +104,20 @@ export function ProjectList() {
               <div className="mt-4 space-y-2">
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Progress</span>
-                  <span>{project.progress}%</span>
+                  <span>{project.progress ?? 0}%</span>
                 </div>
-                <Progress value={project.progress} className="h-1" />
+                <Progress value={project.progress ?? 0} className="h-1" />
               </div>
             </CardContent>
             <CardFooter className="pt-2">
               <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <MessageSquare className="h-3 w-3" />
-                  <span>{project.conversations} conversations</span>
+                  <span>{project.conversations ?? 0} conversations</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="h-3 w-3" />
-                  <span>{project.members} members</span>
+                  <span>{project.members ?? 1} members</span>
                 </div>
               </div>
             </CardFooter>

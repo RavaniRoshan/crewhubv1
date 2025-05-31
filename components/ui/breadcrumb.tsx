@@ -4,13 +4,33 @@ import { ChevronRight, MoreHorizontal } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
-const Breadcrumb = React.forwardRef<
-  HTMLElement,
-  React.ComponentPropsWithoutRef<'nav'> & {
-    separator?: React.ReactNode;
-  }
->(({ ...props }, ref) => <nav ref={ref} aria-label="breadcrumb" {...props} />);
-Breadcrumb.displayName = 'Breadcrumb';
+/**
+ * Breadcrumb component for navigation with dynamic path generation.
+ * @param {object} props
+ * @param {Array<{label: string, href?: string}>} props.paths - Path segments.
+ * @param {string} [props.className] - Additional class names.
+ */
+export interface BreadcrumbProps {
+  paths: { label: string; href?: string }[];
+  className?: string;
+}
+
+export function Breadcrumb({ paths, className }: BreadcrumbProps) {
+  return (
+    <nav className={cn('flex items-center gap-1 text-sm', className)} aria-label="breadcrumb">
+      {paths.map((p, i) => (
+        <React.Fragment key={p.label}>
+          {p.href ? (
+            <a href={p.href} className="hover:underline text-muted-foreground hover:text-foreground">{p.label}</a>
+          ) : (
+            <span className="text-foreground font-medium">{p.label}</span>
+          )}
+          {i < paths.length - 1 && <ChevronRight className="h-4 w-4 mx-1 text-muted-foreground" />}
+        </React.Fragment>
+      ))}
+    </nav>
+  );
+}
 
 const BreadcrumbList = React.forwardRef<
   HTMLOListElement,
@@ -105,7 +125,6 @@ const BreadcrumbEllipsis = ({
 BreadcrumbEllipsis.displayName = 'BreadcrumbElipssis';
 
 export {
-  Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbLink,
