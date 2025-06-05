@@ -48,39 +48,38 @@ const features = [
 
 export function LandingFeatures() {
   return (
-    <section id="features\" className="py-20 bg-muted/50">
+    <section id="features" className="py-20 relative overflow-hidden">
       <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <div className="space-y-2">
-            <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
-              Features
-            </div>
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              Everything You Need for AI Management
-            </h2>
-            <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-              Our platform provides all the tools you need to build, manage, and
-              optimize your AI workflows.
-            </p>
-          </div>
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
+            Key Features
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-[800px] mx-auto">
+            CrewHub offers a comprehensive suite of tools to streamline AI team
+            management and project execution.
+          </p>
         </div>
-        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="relative overflow-hidden rounded-lg border bg-background p-6 shadow-sm transition-all hover:shadow-md"
+              className="group relative p-6 rounded-lg border border-primary/10 bg-secondary/30 backdrop-blur-sm hover:bg-secondary/50 transition-all duration-200"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <div className="mb-4 inline-block rounded-lg bg-primary/10 p-3 text-primary">
                 {feature.icon}
               </div>
-              <div className="mt-4 space-y-2">
-                <h3 className="text-xl font-bold">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </div>
+              <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
+                {feature.title}
+              </h3>
+              <p className="text-muted-foreground">
+                {feature.description}
+              </p>
+              <div className="absolute inset-0 -z-10 blur-xl opacity-0 group-hover:opacity-20 transition-opacity bg-gradient-to-tr from-primary via-accent to-background"></div>
             </div>
           ))}
         </div>
       </div>
+      <div className="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] mask-image: linear-gradient(to bottom, transparent, 20%, white, 80%, transparent)"></div>
     </section>
   );
 }

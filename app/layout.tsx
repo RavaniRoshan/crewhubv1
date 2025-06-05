@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className={cn(inter.className, 'min-h-screen antialiased')}>
         <QueryClientProviderWrapper>
           <AuthProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
               {children}
               <Toaster />
             </ThemeProvider>

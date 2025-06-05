@@ -52,14 +52,19 @@ export function DashboardNav() {
       icon: <Users className="mr-2 h-4 w-4" />,
     },
     {
+      title: "Documents",
+      href: "/documents",
+      icon: <FileText className="mr-2 h-4 w-4" />,
+    },
+    {
+      title: "Organization",
+      href: "/organization",
+      icon: <Building className="mr-2 h-4 w-4" />,
+    },
+    {
       title: "Billing",
       href: "/billing",
       icon: <CreditCard className="mr-2 h-4 w-4" />,
-    },
-    {
-      title: "Documentation",
-      href: "/documentation",
-      icon: <FileText className="mr-2 h-4 w-4" />,
     },
     {
       title: "Settings",
@@ -69,21 +74,33 @@ export function DashboardNav() {
   ];
 
   return (
-    <nav className="grid items-start px-4 py-4">
-      {navItems.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className={cn(
-            "flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-            pathname === item.href ? "bg-accent text-accent-foreground" : "transparent",
-            item.disabled && "pointer-events-none opacity-60"
-          )}
-        >
-          {item.icon}
-          <span>{item.title}</span>
-        </Link>
-      ))}
+    <nav className="grid items-start gap-2 p-4">
+      {navItems.map((item) => {
+        const isActive = pathname === item.href;
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              "group flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-primary/10",
+              isActive
+                ? "bg-primary/15 text-primary"
+                : "text-muted-foreground hover:text-primary"
+            )}
+          >
+            <div className="relative">
+              {item.icon}
+              {isActive && (
+                <div className="absolute inset-0 -z-10 blur-sm opacity-50 bg-primary"></div>
+              )}
+            </div>
+            <span>{item.title}</span>
+            {isActive && (
+              <div className="ml-auto h-1 w-1 rounded-full bg-primary"></div>
+            )}
+          </Link>
+        );
+      })}
     </nav>
   );
 }

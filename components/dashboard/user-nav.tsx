@@ -26,10 +26,13 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
+        <Button
+          variant="ghost"
+          className="relative h-9 w-9 rounded-full ring-2 ring-primary/10 hover:ring-primary/30 transition-all"
+        >
+          <Avatar className="h-8 w-8 ring-2 ring-background">
             <AvatarImage src="/placeholder-user.jpg" alt={user.name} />
-            <AvatarFallback>
+            <AvatarFallback className="bg-secondary text-secondary-foreground">
               {user.name
                 .split(" ")
                 .map((n) => n[0])
@@ -38,7 +41,11 @@ export function UserNav() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent
+        className="w-56 bg-background/95 backdrop-blur-sm border-primary/10"
+        align="end"
+        forceMount
+      >
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{user.name}</p>
@@ -47,27 +54,27 @@ export function UserNav() {
             </p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-primary/10" />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
+          <DropdownMenuItem className="hover:bg-primary/10 focus:bg-primary/10 cursor-pointer group">
+            <User className="mr-2 h-4 w-4 group-hover:text-primary transition-colors" />
             <span>Profile</span>
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard className="mr-2 h-4 w-4" />
+          <DropdownMenuItem className="hover:bg-primary/10 focus:bg-primary/10 cursor-pointer group">
+            <CreditCard className="mr-2 h-4 w-4 group-hover:text-primary transition-colors" />
             <span>Billing</span>
             <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
+          <DropdownMenuItem className="hover:bg-primary/10 focus:bg-primary/10 cursor-pointer group">
+            <Settings className="mr-2 h-4 w-4 group-hover:text-primary transition-colors" />
             <span>Settings</span>
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <LogOut className="mr-2 h-4 w-4" />
+        <DropdownMenuSeparator className="bg-primary/10" />
+        <DropdownMenuItem className="hover:bg-destructive/10 focus:bg-destructive/10 cursor-pointer group">
+          <LogOut className="mr-2 h-4 w-4 group-hover:text-destructive transition-colors" />
           <span>Log out</span>
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
